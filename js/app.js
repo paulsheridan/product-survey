@@ -2,9 +2,7 @@ var product1;
 var product2;
 var product3;
 var products = [];
-var idOne = document.getElementById("id-one");
-var idTwo = document.getElementById("id-two");
-var idThree = document.getElementById("id-three");
+var voteBox = document.getElementById("vote-box");
 var images = [
   "bag.jpg",
   "boots.jpg",
@@ -24,9 +22,9 @@ var images = [
 
 function ProductBox (imageName){
   this.imageName = imageName;
+  this.voteTotal = 0;
   this.productName;
   this.filePath;
-  this.voteTotal = 0;
 }
 
 ProductBox.prototype.imagePath = function (name){
@@ -34,19 +32,18 @@ ProductBox.prototype.imagePath = function (name){
   this.productName = name.slice(0, -4);
 }
 
-function makeProducts (){
+function popProducts (){
   for (var i = 0; i < images.length; i++){
     products[i] = new ProductBox (images[i]);
     products[i].imagePath(products[i].imageName);
   }
 }
-makeProducts();
 
 function randNum (min, max){
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function generateChoices (){
+function generateNew (){
   product1 = products[randNum(0, products.length)];
   product2 = products[randNum(0, products.length)];
   product3 = products[randNum(0, products.length)];
@@ -56,9 +53,35 @@ function generateChoices (){
   while (product2 === product3){
     product2 = products[randNum(0, products.length)];
   }
-  imgOne = document.createElement("img");
+  var imgOne = document.getElementById("choice-one");
   imgOne.src = product1.filePath;
-  idOne.appendChild(imgOne);
-
+  var imgTwo = document.getElementById("choice-two");
+  imgTwo.src = product2.filePath;
+  var imgThree = document.getElementById("choice-three");
+  imgThree.src = product3.filePath;
 }
-generateChoices();
+
+function addVote (id){
+  if (id === "choice-one"){
+    product1.voteTotal += 1;
+    console.log("One vote for " + product1.productName)
+    generateNew();
+  } else if (id === "choice-two"){
+    product2.voteTotal += 1;
+    console.log("One vote for " + product2.productName)
+    generateNew();
+  } else if (id === "choice-three"){
+    product3.voteTotal += 1;
+    console.log("One vote for " + product3.productName)
+    generateNew();
+  } else {
+    console.log("That's not a product!")
+  }
+}
+
+voteBox.addEventListener('click', function(event){
+  addVote(event.target.id);
+});
+
+popProducts();
+generateNew();
