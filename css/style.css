@@ -1,0 +1,6 @@
+@import "normalize.css";
+@import "skeleton.css";
+
+body * {
+  border: 1px dotted;
+}
