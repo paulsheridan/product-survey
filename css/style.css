@@ -1,0 +1,11 @@
+@import "normalize.css";
+@import "skeleton.css";
+
+body * {
+  border: 1px dotted;
+}
+
+img{
+    width:100%;
+    max-width:250px;
+}
