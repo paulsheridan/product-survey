@@ -98,7 +98,7 @@ function addVote (id){
 
 totalsButton.addEventListener("click", function(event){
   products.sort(compare);
-  var headArr = ["Product", "Votes", "Percentage", "% Per View"];
+  var headArr = ["Product", "Votes", "Views", "Percentage", "% Per View"];
   var tblEl = document.createElement("table");
   for (var i = 0; i < headArr.length; i++){
     var thEl = document.createElement("th");
@@ -108,7 +108,7 @@ totalsButton.addEventListener("click", function(event){
   for (var i = 0; i < products.length; i++){
     trEl = document.createElement("tr");
     var valArr = [];
-    valArr.push(products[i].productName, products[i].voteTotal + " Votes", Math.floor((products[i].voteTotal / totalVotes) * 100) + "%", Math.floor((products[i].voteTotal / products[i].displayTotal) * 100) + "%");
+    valArr.push(products[i].productName, products[i].voteTotal + " Votes", products[i].displayTotal + " Views", Math.floor((products[i].voteTotal / totalVotes) * 100) + "%", Math.floor((products[i].voteTotal / products[i].displayTotal) * 100) + "%");
     for (var j = 0; j < valArr.length; j++){
       tdEl = document.createElement("td");
       tdEl.textContent = valArr[j];
