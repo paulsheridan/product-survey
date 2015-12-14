@@ -26,8 +26,9 @@ var images = [
 function ProductBox (imageName){
   this.imageName = imageName;
   this.voteTotal = 0;
-  this.productName;
+  this.displayTotal = 0;
   this.filePath;
+  this.productName;
 }
 
 ProductBox.prototype.imagePath = function (name){
@@ -63,10 +64,13 @@ function generateNew (){
   }
   var imgOne = document.getElementById("choice-one");
   imgOne.src = product1.filePath;
+  product1.displayTotal += 1;
   var imgTwo = document.getElementById("choice-two");
   imgTwo.src = product2.filePath;
+  product2.displayTotal += 1;
   var imgThree = document.getElementById("choice-three");
   imgThree.src = product3.filePath;
+  product3.displayTotal += 1;
   if (totalVotes > 1 && totalVotes % 15 === 0){
     totalsButton.disabled = false;
   } else {
@@ -79,17 +83,14 @@ function addVote (id){
     product1.voteTotal += 1;
     totalVotes += 1;
     console.log("One vote for " + product1.productName);
-    generateNew();
   } else if (id === "choice-two"){
     product2.voteTotal += 1;
     totalVotes += 1;
     console.log("One vote for " + product2.productName);
-    generateNew();
   } else if (id === "choice-three"){
     product3.voteTotal += 1;
     totalVotes += 1;
     console.log("One vote for " + product3.productName);
-    generateNew();
   } else {
     console.log("That's not a product!");
   }
@@ -97,7 +98,7 @@ function addVote (id){
 
 totalsButton.addEventListener("click", function(event){
   products.sort(compare);
-  var headArr = ["Product", "Votes", "Percentage"];
+  var headArr = ["Product", "Votes", "Percentage", "% Per View"];
   var tblEl = document.createElement("table");
   for (var i = 0; i < headArr.length; i++){
     var thEl = document.createElement("th");
@@ -107,7 +108,7 @@ totalsButton.addEventListener("click", function(event){
   for (var i = 0; i < products.length; i++){
     trEl = document.createElement("tr");
     var valArr = [];
-    valArr.push(products[i].productName, products[i].voteTotal + " Votes", Math.floor((products[i].voteTotal / totalVotes) * 100) + "%");
+    valArr.push(products[i].productName, products[i].voteTotal + " Votes", Math.floor((products[i].voteTotal / totalVotes) * 100) + "%", Math.floor((products[i].voteTotal / products[i].displayTotal) * 100) + "%");
     for (var j = 0; j < valArr.length; j++){
       tdEl = document.createElement("td");
       tdEl.textContent = valArr[j];
@@ -120,6 +121,7 @@ totalsButton.addEventListener("click", function(event){
 
 voteBox.addEventListener("click", function(event){
   addVote(event.target.id);
+  generateNew();
 });
 
 function compare(a,b) {
