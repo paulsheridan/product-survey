@@ -50,6 +50,8 @@ function generateNew (){
   while (totalEl.firstChild) {
     totalEl.removeChild(totalEl.firstChild);
   }
+  var totVotes = document.getElementById("tot-votes");
+  totVotes.textContent = "You've voted " + totalVotes + " times.";
   product1 = products[randNum(0, products.length)];
   product2 = products[randNum(0, products.length)];
   product3 = products[randNum(0, products.length)];
@@ -65,6 +67,11 @@ function generateNew (){
   imgTwo.src = product2.filePath;
   var imgThree = document.getElementById("choice-three");
   imgThree.src = product3.filePath;
+  if (totalVotes > 1 && totalVotes % 15 === 0){
+    totalsButton.disabled = false;
+  } else {
+    totalsButton.disabled = true;
+  }
 }
 
 function addVote (id){
@@ -89,32 +96,26 @@ function addVote (id){
 }
 
 totalsButton.addEventListener("click", function(event){
-  if (totalVotes > 1 && totalVotes % 15 === 0){
-    products.sort(compare);
-    console.log(products);
-    var headArr = ["Product", "Votes", "Percentage"];
-    var tblEl = document.createElement("table");
-    for (var i = 0; i < headArr.length; i++){
-      var thEl = document.createElement("th");
-      thEl.textContent = headArr[i];
-      tblEl.appendChild(thEl);
-    }
-    for (var i = 0; i < products.length; i++){
-      trEl = document.createElement("tr");
-      var valArr = [];
-      valArr.push(products[i].productName, products[i].voteTotal + " Votes", Math.floor((products[i].voteTotal / totalVotes) * 100) + "%");
-      console.log(valArr);
-      for (var j = 0; j < valArr.length; j++){
-        tdEl = document.createElement("td");
-        tdEl.textContent = valArr[j];
-        trEl.appendChild(tdEl);
-        tblEl.appendChild(trEl);
-      }
-    }
-    totalEl.appendChild(tblEl);
-  } else {
-    console.log("No sir!")
+  products.sort(compare);
+  var headArr = ["Product", "Votes", "Percentage"];
+  var tblEl = document.createElement("table");
+  for (var i = 0; i < headArr.length; i++){
+    var thEl = document.createElement("th");
+    thEl.textContent = headArr[i];
+    tblEl.appendChild(thEl);
   }
+  for (var i = 0; i < products.length; i++){
+    trEl = document.createElement("tr");
+    var valArr = [];
+    valArr.push(products[i].productName, products[i].voteTotal + " Votes", Math.floor((products[i].voteTotal / totalVotes) * 100) + "%");
+    for (var j = 0; j < valArr.length; j++){
+      tdEl = document.createElement("td");
+      tdEl.textContent = valArr[j];
+      trEl.appendChild(tdEl);
+      tblEl.appendChild(trEl);
+    }
+  }
+  totalEl.appendChild(tblEl);
 });
 
 voteBox.addEventListener("click", function(event){
