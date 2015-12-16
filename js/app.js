@@ -99,11 +99,11 @@ tracker.totalsButton.addEventListener("click", function(event){
   allProducts.sort(compare);
   for (var i = 0; i < allProducts.length; i++){
     barData.labels[i] = (allProducts[i].name);
-    barData.datasets[0].data[i] = (allProducts[i].voteTotal);
+    barData.datasets[0].data[i] = allProducts[i].voteTotal;
     // barData.datasets[0].data[i] = (Math.floor((allProducts[i].voteTotal / tracker.totalVotes) * 100));
     // barData.datasets[1].data[i] = (Math.floor((allProducts[i].voteTotal / allProducts[i].displayTotal) * 100));
   }
-  container = document.getElementById("chart-container");
+  var container = document.getElementById("chart-container");
   while (container.firstChild){
     container.removeChild(container.firstChild);
   }
