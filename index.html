@@ -7,22 +7,20 @@
   </head>
   <body>
     <section class="container">
+      <h1 class="twelve columns">Please choose a product.</h1>
       <fieldset class="twelve columns" id="vote-box">
-        <h1 class="twelve columns">Please choose a product.</h1>
-        <img src="" class="four columns" id="choice-one">
-        <img src="" class="four columns" id="choice-two">
-        <img src="" class="four columns" id="choice-three">
+        <section class="four columns"><img src="" id="choice-one"></section>
+        <section class="four columns"><img src="" id="choice-two"></section>
+        <section class="four columns"><img src="" id="choice-three"></section>
       </fieldset>
       <section>
         <button id="see-totals">See Totals</button>
         <section id="totals"></section>
         <section id="tot-votes"</section>
       </section>
-      <canvas>
-        <canvas id="myChart" width="600" height="400"></canvas>
-      </canvas>
+      <canvas id="canvas" class="ten columns"></canvas>
     </section>
-    <script src='js/Chart.min.js'></script>
+    <script src='js/chart.js'></script>
     <script src='js/app.js'></script>
   </body>
 </html>
