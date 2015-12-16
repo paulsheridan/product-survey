@@ -23,11 +23,11 @@ var barData = {
       strokeColor : "#48A4D1",
       data : []
     },
-    // {
-    //   fillColor : "rgba(73,188,170,0.4)",
-    //   strokeColor : "rgba(72,174,209,0.4)",
-    //   data : []
-    // }
+    {
+      fillColor : "rgba(73,188,170,0.4)",
+      strokeColor : "rgba(72,174,209,0.4)",
+      data : []
+    }
   ]
 }
 
@@ -99,9 +99,9 @@ tracker.totalsButton.addEventListener("click", function(event){
   allProducts.sort(compare);
   for (var i = 0; i < allProducts.length; i++){
     barData.labels[i] = (allProducts[i].name);
-    barData.datasets[0].data[i] = allProducts[i].voteTotal;
-    // barData.datasets[0].data[i] = (Math.floor((allProducts[i].voteTotal / tracker.totalVotes) * 100));
-    // barData.datasets[1].data[i] = (Math.floor((allProducts[i].voteTotal / allProducts[i].displayTotal) * 100));
+    // barData.datasets[0].data[i] = allProducts[i].voteTotal;
+    barData.datasets[0].data[i] = (Math.floor((allProducts[i].voteTotal / tracker.totalVotes) * 100));
+    barData.datasets[1].data[i] = (Math.floor((allProducts[i].voteTotal / allProducts[i].displayTotal) * 100));
   }
   var container = document.getElementById("chart-container");
   while (container.firstChild){
