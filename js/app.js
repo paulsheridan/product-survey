@@ -107,9 +107,9 @@ tracker.totalsButton.addEventListener("click", function(event){
   while (container.firstChild){
     container.removeChild(container.firstChild);
   }
-  newCanvas = document.createElement("canvas");
+  var newCanvas = document.createElement("canvas");
   container.appendChild(newCanvas).setAttribute("class", "twelve columns");
-  chart = newCanvas.getContext("2d");
+  var chart = newCanvas.getContext("2d");
   var myChart = new Chart(chart).Bar(barData);
 });
 
