@@ -1,11 +1,4 @@
-var product1;
-var product2;
-var product3;
-var products = [];
-var totalVotes = 0;
-var voteBox = document.getElementById("vote-box");
-var totalsButton = document.getElementById("see-totals");
-var totalEl = document.getElementById("totals");
+var allProducts = [];
 var images = [
   "bag.jpg",
   "boots.jpg",
@@ -22,115 +15,111 @@ var images = [
   "usb.gif",
   "wine_glass.jpg"
 ];
+var barData = {
+  labels : [],
+  datasets : [
+    {
+      fillColor : "#48A497",
+      strokeColor : "#48A4D1",
+      data : []
+    },
+    // {
+    //   fillColor : "rgba(73,188,170,0.4)",
+    //   strokeColor : "rgba(72,174,209,0.4)",
+    //   data : []
+    // }
+  ]
+}
 
-function ProductBox (imageName){
-  this.imageName = imageName;
+function Product (name, path){
+  this.name = name;
+  this.path = path;
   this.voteTotal = 0;
   this.displayTotal = 0;
-  this.filePath;
-  this.productName;
 }
 
-ProductBox.prototype.imagePath = function (name){
-  this.filePath = "img/" + name;
-  this.productName = name.slice(0, -4);
-}
-
-function popProducts (){
+(function makeProducts (){
   for (var i = 0; i < images.length; i++){
-    products[i] = new ProductBox (images[i]);
-    products[i].imagePath(products[i].imageName);
+    allProducts.push(new Product(images[i].slice(0, -4), "img/" + images[i]));
   }
-}
+})();
 
-function randNum (min, max){
-  return Math.floor(Math.random() * (max - min)) + min;
-}
+var tracker = {
+  left: '',
+  right: '',
+  totalVotes: 0,
+  voteBox: document.getElementById("vote-box"),
+  totalsButton: document.getElementById("see-totals"),
+  totalEl: document.getElementById("totals"),
+  product1: document.getElementById("choice-one"),
+  product2: document.getElementById("choice-two"),
+  product3: document.getElementById("choice-three"),
 
-function generateNew (){
-  while (totalEl.firstChild) {
-    totalEl.removeChild(totalEl.firstChild);
-  }
-  var totVotes = document.getElementById("tot-votes");
-  totVotes.textContent = "You've voted " + totalVotes + " times.";
-  product1 = products[randNum(0, products.length)];
-  product2 = products[randNum(0, products.length)];
-  product3 = products[randNum(0, products.length)];
-  while (product1 === product2 || product1 === product3){
-    product1 = products[randNum(0, products.length)];
-  }
-  while (product2 === product3){
-    product2 = products[randNum(0, products.length)];
-  }
-  var imgOne = document.getElementById("choice-one");
-  imgOne.src = product1.filePath;
-  product1.displayTotal += 1;
-  var imgTwo = document.getElementById("choice-two");
-  imgTwo.src = product2.filePath;
-  product2.displayTotal += 1;
-  var imgThree = document.getElementById("choice-three");
-  imgThree.src = product3.filePath;
-  product3.displayTotal += 1;
-  if (totalVotes > 1 && totalVotes % 15 === 0){
-    totalsButton.disabled = false;
-  } else {
-    totalsButton.disabled = true;
-  }
-}
+  randomNumber: function(min, max){
+    return Math.floor(Math.random() * (max - min)) + min;
+  },
 
-function addVote (id){
-  if (id === "choice-one"){
-    product1.voteTotal += 1;
-    totalVotes += 1;
-    console.log("One vote for " + product1.productName);
-  } else if (id === "choice-two"){
-    product2.voteTotal += 1;
-    totalVotes += 1;
-    console.log("One vote for " + product2.productName);
-  } else if (id === "choice-three"){
-    product3.voteTotal += 1;
-    totalVotes += 1;
-    console.log("One vote for " + product3.productName);
-  } else {
-    console.log("That's not a product!");
-  }
-}
+  generateChoices: function(){
+    do {
+      tracker.product1 = allProducts[tracker.randomNumber(0, allProducts.length)];
+      tracker.product2 = allProducts[tracker.randomNumber(0, allProducts.length)];
+      tracker.product3 = allProducts[tracker.randomNumber(0, allProducts.length)];
+    } while (tracker.product1 === tracker.product2 || tracker.product1 === tracker.product3 || tracker.product2 === tracker.product3);
 
-totalsButton.addEventListener("click", function(event){
-  products.sort(compare);
-  var headArr = ["Product", "Votes", "Views", "Percentage", "% Per View"];
-  var tblEl = document.createElement("table");
-  for (var i = 0; i < headArr.length; i++){
-    var thEl = document.createElement("th");
-    thEl.textContent = headArr[i];
-    tblEl.appendChild(thEl);
-  }
-  for (var i = 0; i < products.length; i++){
-    trEl = document.createElement("tr");
-    var valArr = [];
-    valArr.push(products[i].productName, products[i].voteTotal + " Votes", products[i].displayTotal + " Views", Math.floor((products[i].voteTotal / totalVotes) * 100) + "%", Math.floor((products[i].voteTotal / products[i].displayTotal) * 100) + "%");
-    for (var j = 0; j < valArr.length; j++){
-      tdEl = document.createElement("td");
-      tdEl.textContent = valArr[j];
-      trEl.appendChild(tdEl);
-      tblEl.appendChild(trEl);
+    document.getElementById("choice-one").src = tracker.product1.path;
+    tracker.product1.displayTotal += 1;
+    document.getElementById("choice-two").src = tracker.product2.path;
+    tracker.product2.displayTotal += 1;
+    document.getElementById("choice-three").src = tracker.product3.path;
+    tracker.product3.displayTotal += 1;
+
+    if (tracker.totalVotes > 1 && tracker.totalVotes % 15 === 0){
+      tracker.totalsButton.hidden = false;
+    } else {
+      tracker.totalsButton.hidden = true;
     }
-  }
-  totalEl.appendChild(tblEl);
-});
+  },
 
-voteBox.addEventListener("click", function(event){
-  addVote(event.target.id);
-  generateNew();
-});
+  addTotalVote: function(productNumber){
+    productNumber.voteTotal += 1;
+    tracker.totalVotes += 1;
+    tracker.generateChoices();
+  }
+}
 
 function compare(a,b) {
   if (a.voteTotal > b.voteTotal)
-    return -1;
+  return -1;
   if (a.voteTotal < b.voteTotal)
-    return 1;
+  return 1;
   return 0;
 }
 
-popProducts();
-generateNew();
+tracker.totalsButton.addEventListener("click", function(event){
+  allProducts.sort(compare);
+  for (var i = 0; i < allProducts.length; i++){
+    barData.labels[i] = (allProducts[i].name);
+    barData.datasets[0].data[i] = (allProducts[i].voteTotal);
+    // barData.datasets[0].data[i] = (Math.floor((allProducts[i].voteTotal / tracker.totalVotes) * 100));
+    // barData.datasets[1].data[i] = (Math.floor((allProducts[i].voteTotal / allProducts[i].displayTotal) * 100));
+  }
+  container = document.getElementById("chart-container");
+  while (container.firstChild){
+    container.removeChild(container.firstChild);
+  }
+  newCanvas = document.createElement("canvas");
+  container.appendChild(newCanvas).setAttribute("class", "twelve columns");
+  chart = newCanvas.getContext("2d");
+  var myChart = new Chart(chart).Bar(barData);
+});
+
+tracker.voteBox.addEventListener("click", function(event){
+  if (event.target.id === "choice-one"){
+    tracker.addTotalVote(tracker.product1);
+  } else if (event.target.id === "choice-two"){
+    tracker.addTotalVote(tracker.product2);
+  } else if (event.target.id === "choice-three"){
+    tracker.addTotalVote(tracker.product3);
+  }
+});
+tracker.generateChoices();
