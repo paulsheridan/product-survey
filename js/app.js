@@ -23,11 +23,11 @@ var barData = {
       strokeColor : "#48A4D1",
       data : []
     },
-    {
-      fillColor : "rgba(73,188,170,0.4)",
-      strokeColor : "rgba(72,174,209,0.4)",
-      data : []
-    }
+    // {
+    //   fillColor : "rgba(73,188,170,0.4)",
+    //   strokeColor : "rgba(72,174,209,0.4)",
+    //   data : []
+    // }
   ]
 }
 
@@ -99,11 +99,18 @@ tracker.totalsButton.addEventListener("click", function(event){
   allProducts.sort(compare);
   for (var i = 0; i < allProducts.length; i++){
     barData.labels[i] = (allProducts[i].name);
-    barData.datasets[0].data[i] = (Math.floor((allProducts[i].voteTotal / tracker.totalVotes) * 100));
-    barData.datasets[1].data[i] = (Math.floor((allProducts[i].voteTotal / allProducts[i].displayTotal) * 100));
+    barData.datasets[0].data[i] = (allProducts[i].voteTotal);
+    // barData.datasets[0].data[i] = (Math.floor((allProducts[i].voteTotal / tracker.totalVotes) * 100));
+    // barData.datasets[1].data[i] = (Math.floor((allProducts[i].voteTotal / allProducts[i].displayTotal) * 100));
   }
-  var chart = document.getElementById("canvas").getContext("2d");
-  new Chart(chart).Bar(barData);
+  container = document.getElementById("chart-container");
+  while (container.firstChild){
+    container.removeChild(container.firstChild);
+  }
+  newCanvas = document.createElement("canvas");
+  container.appendChild(newCanvas).setAttribute("class", "twelve columns");
+  chart = newCanvas.getContext("2d");
+  var myChart = new Chart(chart).Bar(barData);
 });
 
 tracker.voteBox.addEventListener("click", function(event){
