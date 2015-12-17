@@ -23,11 +23,11 @@ var barData = {
       strokeColor : "#48A4D1",
       data : []
     },
-    {
-      fillColor : "rgba(73,188,170,0.4)",
-      strokeColor : "rgba(72,174,209,0.4)",
-      data : []
-    }
+    // {
+    //   fillColor : "rgba(73,188,170,0.4)",
+    //   strokeColor : "rgba(72,174,209,0.4)",
+    //   data : []
+    // }
   ]
 }
 
@@ -84,6 +84,46 @@ var tracker = {
     productNumber.voteTotal += 1;
     tracker.totalVotes += 1;
     tracker.generateChoices();
+    localStorage.setItem(productNumber.name, JSON.stringify(productNumber));
+  },
+
+  importJson: function(){
+    for (var i = 0; i < allProducts.length; i++){
+      var getJson = localStorage.getItem(allProducts[i].name);
+      if (getJson !== null){
+        var parsedObj = JSON.parse(getJson);
+        allProducts[i].voteTotal += parsedObj.voteTotal;
+        allProducts[i].displayTotal += parsedObj.displayTotal;
+      }
+    }
+  },
+
+  makeTable: function (){
+    allProducts.sort(compare);
+    for (var i = 0; i < allProducts.length; i++){
+      barData.labels[i] = (allProducts[i].name);
+      barData.datasets[0].data[i] = allProducts[i].voteTotal;
+      //barData.datasets[0].data[i] = (Math.floor((allProducts[i].voteTotal / tracker.totalVotes) * 100));
+      //barData.datasets[1].data[i] = (Math.floor((allProducts[i].voteTotal / allProducts[i].displayTotal) * 100));
+    }
+    var container = document.getElementById("chart-container");
+    while (container.firstChild){
+      container.removeChild(container.firstChild);
+    }
+    var newCanvas = document.createElement("canvas");
+    container.appendChild(newCanvas).setAttribute("class", "twelve columns");
+    var chart = newCanvas.getContext("2d");
+    new Chart(chart).Bar(barData);
+  },
+
+  voteBoxEvent: function(){
+    if (event.target.id === "choice-one"){
+      tracker.addTotalVote(tracker.product1);
+    } else if (event.target.id === "choice-two"){
+      tracker.addTotalVote(tracker.product2);
+    } else if (event.target.id === "choice-three"){
+      tracker.addTotalVote(tracker.product3);
+    }
   }
 }
 
@@ -95,31 +135,7 @@ function compare(a,b) {
   return 0;
 }
 
-tracker.totalsButton.addEventListener("click", function(event){
-  allProducts.sort(compare);
-  for (var i = 0; i < allProducts.length; i++){
-    barData.labels[i] = (allProducts[i].name);
-    // barData.datasets[0].data[i] = allProducts[i].voteTotal;
-    barData.datasets[0].data[i] = (Math.floor((allProducts[i].voteTotal / tracker.totalVotes) * 100));
-    barData.datasets[1].data[i] = (Math.floor((allProducts[i].voteTotal / allProducts[i].displayTotal) * 100));
-  }
-  var container = document.getElementById("chart-container");
-  while (container.firstChild){
-    container.removeChild(container.firstChild);
-  }
-  var newCanvas = document.createElement("canvas");
-  container.appendChild(newCanvas).setAttribute("class", "twelve columns");
-  var chart = newCanvas.getContext("2d");
-  var myChart = new Chart(chart).Bar(barData);
-});
-
-tracker.voteBox.addEventListener("click", function(event){
-  if (event.target.id === "choice-one"){
-    tracker.addTotalVote(tracker.product1);
-  } else if (event.target.id === "choice-two"){
-    tracker.addTotalVote(tracker.product2);
-  } else if (event.target.id === "choice-three"){
-    tracker.addTotalVote(tracker.product3);
-  }
-});
+tracker.totalsButton.addEventListener("click", tracker.makeTable);
+tracker.voteBox.addEventListener("click", tracker.voteBoxEvent);
+window.onload = tracker.importJson();
 tracker.generateChoices();
