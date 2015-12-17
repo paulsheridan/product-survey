@@ -23,13 +23,34 @@ var barData = {
       strokeColor : "#48A4D1",
       data : []
     },
-    // {
-    //   fillColor : "rgba(73,188,170,0.4)",
-    //   strokeColor : "rgba(72,174,209,0.4)",
-    //   data : []
-    // }
   ]
 }
+
+var radarData = {
+  labels: [],
+  datasets: [
+    {
+      label: "Percentage of Total Votes",
+      fillColor: "rgba(220,220,220,0.2)",
+      strokeColor: "rgba(220,220,220,1)",
+      pointColor: "rgba(220,220,220,1)",
+      pointStrokeColor: "#fff",
+      pointHighlightFill: "#fff",
+      pointHighlightStroke: "rgba(220,220,220,1)",
+      data: []
+    },
+    {
+      label: "Percentage of Votes per View",
+      fillColor: "rgba(151,187,205,0.2)",
+      strokeColor: "rgba(151,187,205,1)",
+      pointColor: "rgba(151,187,205,1)",
+      pointStrokeColor: "#fff",
+      pointHighlightFill: "#fff",
+      pointHighlightStroke: "rgba(151,187,205,1)",
+      data: []
+    }
+  ]
+};
 
 function Product (name, path){
   this.name = name;
@@ -49,7 +70,6 @@ var tracker = {
   right: '',
   totalVotes: 0,
   voteBox: document.getElementById("vote-box"),
-  totalsButton: document.getElementById("see-totals"),
   totalEl: document.getElementById("totals"),
   product1: document.getElementById("choice-one"),
   product2: document.getElementById("choice-two"),
@@ -72,19 +92,21 @@ var tracker = {
     tracker.product2.displayTotal += 1;
     document.getElementById("choice-three").src = tracker.product3.path;
     tracker.product3.displayTotal += 1;
-
-    if (tracker.totalVotes > 1 && tracker.totalVotes % 15 === 0){
-      tracker.totalsButton.hidden = false;
+    if (tracker.totalVotes < 15){
+      buttonHandler.totalsButton.hidden = true;
+      tracker.voteBox.addEventListener("click", tracker.voteBoxEvent);
     } else {
-      tracker.totalsButton.hidden = true;
+      buttonHandler.totalsButton.hidden = false;
+      buttonHandler.totalsButton.addEventListener("click", tracker.makeTable);
+      tracker.voteBox.removeEventListener("click", tracker.voteBoxEvent);
     }
   },
 
   addTotalVote: function(productNumber){
     productNumber.voteTotal += 1;
     tracker.totalVotes += 1;
-    tracker.generateChoices();
     localStorage.setItem(productNumber.name, JSON.stringify(productNumber));
+    tracker.generateChoices();
   },
 
   importJson: function(){
@@ -102,21 +124,16 @@ var tracker = {
     allProducts.sort(compare);
     for (var i = 0; i < allProducts.length; i++){
       barData.labels[i] = (allProducts[i].name);
+      radarData.labels[i] = (allProducts[i].name);
       barData.datasets[0].data[i] = allProducts[i].voteTotal;
-      //barData.datasets[0].data[i] = (Math.floor((allProducts[i].voteTotal / tracker.totalVotes) * 100));
-      //barData.datasets[1].data[i] = (Math.floor((allProducts[i].voteTotal / allProducts[i].displayTotal) * 100));
+      radarData.datasets[0].data[i] = (Math.floor((allProducts[i].voteTotal / tracker.totalVotes) * 100));
+      radarData.datasets[1].data[i] = (Math.floor((allProducts[i].voteTotal / allProducts[i].displayTotal) * 100));
     }
-    var container = document.getElementById("chart-container");
-    while (container.firstChild){
-      container.removeChild(container.firstChild);
-    }
-    var newCanvas = document.createElement("canvas");
-    container.appendChild(newCanvas).setAttribute("class", "twelve columns");
-    var chart = newCanvas.getContext("2d");
-    new Chart(chart).Bar(barData);
+    buttonHandler.switchTables();
+    buttonHandler.totalsButton.hidden = true;
   },
 
-  voteBoxEvent: function(){
+  voteBoxEvent: function() {
     if (event.target.id === "choice-one"){
       tracker.addTotalVote(tracker.product1);
     } else if (event.target.id === "choice-two"){
@@ -127,6 +144,31 @@ var tracker = {
   }
 }
 
+var buttonHandler = {
+  totalsButton: document.getElementById("see-totals"),
+  changeGraph: document.getElementById("change-graph"),
+  resetLocal: document.getElementById("reset-local"),
+  tableState: "bar",
+
+  switchTables: function(){
+    var container = document.getElementById("chart-container");
+    while (container.firstChild){
+      container.removeChild(container.firstChild);
+    }
+    var newCanvas = document.createElement("canvas");
+    container.appendChild(newCanvas).setAttribute("class", "twelve columns");
+    var chart = newCanvas.getContext("2d");
+    if(this.tableState === "bar"){
+      var radarChart = new Chart(chart).Radar(radarData);
+      this.tableState = "radar";
+    } else {
+      var barChart = new Chart(chart).Bar(barData);
+      this.tableState = "bar";
+    }
+    buttonHandler.changeGraph.addEventListener("click", this.switchTables);
+  }
+}
+
 function compare(a,b) {
   if (a.voteTotal > b.voteTotal)
   return -1;
@@ -134,8 +176,6 @@ function compare(a,b) {
   return 1;
   return 0;
 }
-
-tracker.totalsButton.addEventListener("click", tracker.makeTable);
-tracker.voteBox.addEventListener("click", tracker.voteBoxEvent);
+buttonHandler.resetLocal.addEventListener("click", localStorage.clear());
 window.onload = tracker.importJson();
 tracker.generateChoices();
